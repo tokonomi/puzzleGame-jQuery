@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            margin: 0;
+        }
+        #game{
+            position: relative;
+            width:800px;
+            height: 600px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game"></div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(()=>{
+            $("#game")
+                .css('background', 'url("bg.jpg") center/cover')
+            setTimeout(start, 3000)
+
+            function start(){
+                $("#game").css({
+                    backgroundImage: "",
+                    border: "1px solid #000"
+                })
+                
+                for(let i = 0; i < 6; i++){
+                    for(let j = 0; j < 8; j++){
+                        $("#game").append('<div class="dropPiece"></div>')
+                        $(".dropPiece")
+                            .css({
+                                width: "98px",
+                                height: "98px",
+                                border: "1px solid #000",
+                                float: "left"
+                            })
+                    }
+                }
+                
+                for(let i = 0; i < 6; i++){
+                    for(let j = 0; j < 8; j++){
+                        $("#game").append('<div id="box'+ i + j +'"></div>')
+
+                        $("#box"+ i + j)
+                            .css({
+                                width: "100px",
+                                height: "100px",
+                                position: "absolute",
+                                transform: "rotate("+ rand(-15, 15) +"deg)",
+                                border: "1px solid #000",
+                                backgroundImage: "url('bg.jpg')",
+                                backgroundPosition: -j * 100 + "px " + -i * 100 + "px",
+                                top: i * 100 + "px",
+                                left: j * 100 + "px",
+                            })
+                            .animate({
+                                top: rand(10, $("#game").height() - 110) + "px",
+                                left: rand($("#game").width(), $(window).width() - 110) + "px",
+                            })
+                            .draggable({
+                                revert: "valid",
+                                snap: true,
+                                start: function(){
+                                    $(this).css({
+                                        transform: "rotate(0)",
+                                        zIndex: 99
+                                    })
+                                },
+                                stop: function(){
+                                    let left = parseInt($(this).css("left"))
+                                    ,   top = parseInt($(this).css("top"));
+                                    $(this)
+                                        .animate({
+                                            top: Math.round(top / 100) * 100 + "px",
+                                            left: Math.round(left / 100) * 100 + "px"
+                                        }, function(){
+                                            $(".dropPiece").droppable({
+                                                                drop: function(){
+                                                                    $(this)
+                                                                        .append($("#box"+ i + j).draggable())
+                                                                        .css({
+                                                                            position: "relative"
+                                                                        })
+                                                                    $("#box"+ i + j)
+                                                                        .draggable().css({
+                                                                            position: "relative",
+                                                                            left: 0,
+                                                                            top: 0,
+                                                                            zIndex: 0
+                                                                        })
+                                                                }
+                                                            })
+                                        })
+                                        
+                                }
+                            })
+                    }
+                }
+            }
+            function rand(min, max) {
+                return Math.floor(Math.random() * (max - min + 1) ) + min;
+            }
+        })
+    </script>
+</body>
+</html>
